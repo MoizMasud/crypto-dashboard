@@ -22,3 +22,18 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+
+# dependencies
+node_modules/
+.pnpm-store/
+# build
+dist/
+# env
+.env
+.env.*
+# editors
+.vscode/
+.idea/
+# misc
+.DS_Store
