@@ -1,35 +1,51 @@
 import { Layout } from "./components/Layout";
 import { StatsCard } from "./components/StatCard";
+import { useCryptoData } from "./hooks/useCryptoData";
 
+type StatId = 'bitcoin' | 'ethereum' | 'solana';
 
 type Stat = {
-  id: string;
+  id: StatId;
   title: string;
-  value: string;
-  change: string;
 };
 
 const stats: Stat[] = [
-  { id: 'btc', title: 'Bitcoin', value: '$67,200', change: '+2.5%' },
-  { id: 'eth', title: 'Ethereum', value: '$3,200', change: '-1.2%' },
-  { id: 'sol', title: 'Solana', value: '$185', change: '+0.9%' },
+  { id: 'bitcoin', title: 'Bitcoin' },
+  { id: 'ethereum', title: 'Ethereum' },
+  { id: 'solana', title: 'Solana' },
 ];
 
 function App() {
+  const { data, loading } = useCryptoData();
+  if (loading) {
+    return (
+      <Layout>
+        <div className="p-4 text-gray-400">Loading market data…</div>
+      </Layout>
+    );
+  }
   return (
-    <Layout>
-        <div className="grid gap-4 p-4 md:grid-cols-3 sm:grid-cols-1">
-          {stats.map((s) => (
-            <StatsCard
-              key={s.id}
-              title={s.title}
-              value={s.value}
-              change={s.change}
-            />
-        ))}
-      </div>
-    </Layout>
-  );
+  <Layout>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+      {stats.map((stat) => {
+        const coin = data[stat.id];
+
+        const value = `$${coin.usd.toLocaleString()}`;
+        const change = `${coin.usd_24h_change.toFixed(2)}%`;
+
+        return (
+          <StatsCard
+            key={stat.id}
+            title={stat.title}
+            value={value}
+            change={change}
+          />
+        );
+      })}
+    </div>
+  </Layout>
+);
+
 }
 
 export default App;
