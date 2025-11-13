@@ -26,7 +26,7 @@ function App() {
   }
   return (
   <Layout>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+    <div className="grid grid-cols-1 md:grid-cols-8 gap-4 p-4">
       {stats.map((stat) => {
         if (!data)  return null;
         const coin = data[stat.id];
