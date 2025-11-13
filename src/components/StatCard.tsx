@@ -1,21 +1,24 @@
-interface StatCardProps {
+type Props = {
   title: string;
   value: string;
-  change?: string;
-}
+  change: string;
+  onClick?: () => void;
+};
 
-export function StatsCard({ title, value, change }: StatCardProps) {
-  const isPositive = change?.startsWith("+");
+export function StatsCard({ title, value, change, onClick }: Props) {
+  const isPositive = change.startsWith('+');
+
   return (
-    <div className="bg-neutral-800 p-4 rounded-lg border border-neutral-700">
-      <div className="text-neutral-400 text-sm mb-1">{title}</div>
-      <div className="text-2xl font-semibold">{value}</div>
-      {change && (
-      <p className={`${isPositive ? "text-green-400" : "text-red-400"} font-medium`}>
-         {change ?? '--'}
+    <div
+      className="bg-gray-800 rounded-xl p-4 shadow-md cursor-pointer hover:scale-[1.02] transition-transform"
+      onClick={onClick}
+    >
+      <h2 className="text-lg font-semibold">{title}</h2>
+      <p className="text-2xl mt-2">{value}</p>
+      <p className={isPositive ? 'text-green-400' : 'text-red-400'}>
+        {change}
       </p>
-
-      )}
     </div>
   );
 }
+
