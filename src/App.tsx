@@ -28,6 +28,7 @@ function App() {
   <Layout>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
       {stats.map((stat) => {
+        if (!data)  return null;
         const coin = data[stat.id];
 
         const value = `$${coin.usd.toLocaleString()}`;

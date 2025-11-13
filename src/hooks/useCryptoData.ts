@@ -4,14 +4,12 @@ type CoinData = {
   usd_24h_change: number;
 };
 
-type MarketData = {
-  bitcoin: CoinData;
-  ethereum: CoinData;
-  solana: CoinData;
-};
+type CoinId = 'bitcoin' | 'ethereum' | 'solana';
+
+type MarketData = Record<CoinId, CoinData>;
 
 export function useCryptoData() {
-  const [data, setData] = useState<MarketData>();
+  const [data, setData] = useState<MarketData | null>(null);
   const [loading, setLoading] = useState(true);
 
 useEffect(() => { // ngOnInit
@@ -24,7 +22,7 @@ async function load() {
         const res = await fetch(
             "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd&include_24hr_change=true"
         );
-        const json = await res.json();
+        const json: MarketData = await res.json();
         setData(json);
     } finally {
         setLoading(false);
