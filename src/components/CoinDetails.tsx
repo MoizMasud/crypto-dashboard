@@ -1,57 +1,40 @@
-// src/components/CoinDetails.tsx
+import { CoinSparkline } from './CoinSparkline';
 import type { MarketData, StatId } from '../types';
 
-type CoinDetailsProps = {
+type Props = {
   selectedId: StatId | null;
-  data: MarketData | null;
+  data: MarketData;
 };
 
-const idToKey: Record<StatId, keyof MarketData> = {
-  btc: 'bitcoin',
-  eth: 'ethereum',
-  sol: 'solana',
-};
+export function CoinDetails({ selectedId, data }: Props) {
+  if (!selectedId) return null;
 
-export function CoinDetails({ selectedId, data }: CoinDetailsProps) {
-  if (!selectedId || !data) {
-    return (
-      <div className="bg-gray-800 rounded-xl p-4 text-gray-400">
-        Select a coin above to see more details.
-      </div>
-    );
-  }
+  const coinKey =
+    selectedId === 'btc'
+      ? 'bitcoin'
+      : selectedId === 'eth'
+      ? 'ethereum'
+      : 'solana';
 
-  const key = idToKey[selectedId];
-  const coin = data[key];
+  const coin = data[coinKey];
 
-  const isUp = coin.usd_24h_change >= 0;
+  const isPositive = coin.usd_24h_change >= 0;
 
   return (
-    <div className="bg-gray-800 rounded-xl p-4 space-y-3">
-      <div className="flex items-baseline justify-between">
-        <h2 className="text-xl font-semibold capitalize">{key}</h2>
-        <span
-          className={
-            'text-sm px-2 py-0.5 rounded-full ' +
-            (isUp ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400')
-          }
-        >
-          {isUp ? 'Bullish' : 'Bearish'}
+    <div className="bg-gray-800 rounded-xl p-4 shadow-md">
+      <h2 className="text-lg font-semibold mb-2">
+        {coinKey.charAt(0).toUpperCase() + coinKey.slice(1)} details
+      </h2>
+
+      <p className="text-sm text-gray-300 mb-3">
+        Price: <span className="font-mono">${coin.usd.toLocaleString()}</span>{' '}
+        · 24h change:{' '}
+        <span className={isPositive ? 'text-green-400' : 'text-red-400'}>
+          {coin.usd_24h_change.toFixed(2)}%
         </span>
-      </div>
-
-      <p className="text-3xl font-bold">
-        ${coin.usd.toLocaleString()}
       </p>
 
-      <p className={isUp ? 'text-green-400' : 'text-red-400'}>
-        24h change: {coin.usd_24h_change.toFixed(2)}%
-      </p>
-
-      <div className="text-sm text-gray-400">
-        <p>More detail later (volume, market cap, etc.).</p>
-        <p>Right now this is your “zoomed-in” panel for the selected coin.</p>
-      </div>
+      <CoinSparkline points={coin.history} isPositive={isPositive} />
     </div>
   );
 }

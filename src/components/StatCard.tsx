@@ -1,47 +1,35 @@
-import type { MarketDataPoint } from "../types";
-import { CoinSparkline } from "./CoinSparkline";
-
-type StatsCardProps = {
+// src/components/StatCard.tsx
+export type StatsCardProps = {
   title: string;
   value: string;
   change: string;
-  isPositive: boolean;
   onClick?: () => void;
-  sparklinePoints: MarketDataPoint[];
+  isActive?: boolean;   // 👈 NEW
 };
 
 export function StatsCard({
   title,
   value,
   change,
-  isPositive,
   onClick,
-  sparklinePoints,
+  isActive = false,     // 👈 default
 }: StatsCardProps) {
+  const isPositive = change.startsWith('+');
+
+  const cardClasses = [
+    'rounded-xl p-4 shadow-md cursor-pointer transition',
+    isActive
+      ? 'bg-gray-800 ring-2 ring-emerald-400 scale-[1.02]'
+      : 'bg-gray-800 hover:ring-1 hover:ring-gray-600 hover:scale-[1.01]',
+  ].join(' ');
+
   return (
-    <button
-      onClick={onClick}
-      className="bg-gray-800 rounded-xl p-4 shadow-md w-full text-left hover:bg-gray-750 transition-colors"
-    >
-      <div className="flex items-baseline justify-between mb-2">
-        <h2 className="text-sm font-medium text-gray-300">{title}</h2>
-        <span
-          className={`text-xs font-semibold ${
-            isPositive ? 'text-green-400' : 'text-red-400'
-          }`}
-        >
-          {change}
-        </span>
-      </div>
-
-      <p className="text-2xl font-semibold mb-2">{value}</p>
-
-      <div className="mt-2">
-       <CoinSparkline
-          points={sparklinePoints.map((p) => p.price)}
-          isPositive={isPositive}
-        />
-      </div>
+    <button className={cardClasses} onClick={onClick} type="button">
+      <h2 className="text-lg font-semibold">{title}</h2>
+      <p className="text-2xl mt-2">{value}</p>
+      <p className={isPositive ? 'text-green-400' : 'text-red-400'}>
+        {change}
+      </p>
     </button>
   );
 }

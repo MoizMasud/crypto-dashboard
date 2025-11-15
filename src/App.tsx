@@ -2,9 +2,9 @@
 import { useEffect, useState } from 'react';
 import { Layout } from './components/Layout';
 import { StatsCard } from './components/StatCard';
-import { fetchMarketData } from './api/marketData';
 import { CoinDetails } from './components/CoinDetails';
-import type { MarketData, Stat } from './types';
+import { fetchMarketData } from './api/marketData';
+import type { MarketData, Stat, StatId } from './types';
 
 const stats: Stat[] = [
   { id: 'btc', title: 'Bitcoin', apiKey: 'bitcoin' },
@@ -14,9 +14,8 @@ const stats: Stat[] = [
 
 function App() {
   const [data, setData] = useState<MarketData | null>(null);
-  const [selectedId, setSelectedId] =
-    useState<'btc' | 'eth' | 'sol' | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [selectedId, setSelectedId] = useState<StatId | null>('btc');
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
@@ -24,6 +23,7 @@ function App() {
     try {
       setIsLoading(true);
       setError(null);
+
       const marketData = await fetchMarketData();
       setData(marketData);
       setLastUpdated(new Date());
@@ -35,7 +35,10 @@ function App() {
   }
 
   useEffect(() => {
+    // initial fetch
     loadData();
+
+    // auto-refresh every 60s
     const interval = setInterval(loadData, 60_000);
     return () => clearInterval(interval);
   }, []);
@@ -49,18 +52,22 @@ function App() {
     >
       <div className="p-4">
         {isLoading && !data && <p>Loading prices…</p>}
-        {error && <p className="text-red-400">Error: {error}</p>}
+        {error && (
+          <p className="mb-4 text-sm text-red-400">
+            Error: {error}
+          </p>
+        )}
 
         {data && (
           <>
-            <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="grid gap-4 mb-6 sm:grid-cols-3">
               {stats.map((stat) => {
-                const coin = data[stat.apiKey];
+                const coin = data[stat.apiKey]; // typed because apiKey is CoinKey
 
-                const value = `$${coin.usd.toLocaleString()}`;
-                const changeValue = coin.usd_24h_change;
-                const change = `${changeValue.toFixed(2)}%`;
-                const isPositive = changeValue >= 0;
+                const value = `$${coin.usd.toLocaleString(undefined, {
+                  maximumFractionDigits: 2,
+                })}`;
+                const change = `${coin.usd_24h_change.toFixed(2)}%`;
 
                 return (
                   <StatsCard
@@ -68,9 +75,8 @@ function App() {
                     title={stat.title}
                     value={value}
                     change={change}
-                    isPositive={isPositive}
                     onClick={() => setSelectedId(stat.id)}
-                    sparklinePoints={coin.sparkline}
+                    isActive={stat.id === selectedId}
                   />
                 );
               })}
@@ -83,4 +89,5 @@ function App() {
     </Layout>
   );
 }
+
 export default App;
