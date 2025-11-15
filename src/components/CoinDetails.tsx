@@ -1,60 +1,58 @@
-type CoinKey = 'bitcoin' | 'ethereum' | 'solana';
+// src/components/CoinDetails.tsx
+import type { MarketData, StatId } from '../types';
 
-type CoinInfo = {
-  usd: number;
-  usd_24h_change: number;
+type CoinDetailsProps = {
+  selectedId: StatId | null;
+  data: MarketData | null;
 };
 
-type MarketData = Record<CoinKey, CoinInfo>;
-
-type Props = {
-  selectedId: 'btc' | 'eth' | 'sol' | null;
-  data: MarketData;
-};
-
-const idToApiKey: Record<'btc' | 'eth' | 'sol', CoinKey> = {
+const idToKey: Record<StatId, keyof MarketData> = {
   btc: 'bitcoin',
   eth: 'ethereum',
   sol: 'solana',
 };
 
-const idToLabel: Record<'btc' | 'eth' | 'sol', string> = {
-  btc: 'Bitcoin',
-  eth: 'Ethereum',
-  sol: 'Solana',
-};
-
-export function CoinDetails({ selectedId, data }: Props) {
-  if (!selectedId) {
+export function CoinDetails({ selectedId, data }: CoinDetailsProps) {
+  if (!selectedId || !data) {
     return (
-      <div className="bg-gray-800 rounded-xl p-4">
-        <p className="text-gray-400">
-          Click a card above to see more details.
-        </p>
+      <div className="bg-gray-800 rounded-xl p-4 text-gray-400">
+        Select a coin above to see more details.
       </div>
     );
   }
 
-  const key = idToApiKey[selectedId];
+  const key = idToKey[selectedId];
   const coin = data[key];
 
-  const price = `$${coin.usd.toLocaleString()}`;
-  const change = coin.usd_24h_change.toFixed(2);
-  const isPositive = coin.usd_24h_change >= 0;
+  const isUp = coin.usd_24h_change >= 0;
 
   return (
-    <div className="bg-gray-800 rounded-xl p-4">
-      <h2 className="text-xl font-semibold mb-2">
-        {idToLabel[selectedId]} details
-      </h2>
-      <p className="text-3xl mb-4">{price}</p>
-      <p className={isPositive ? 'text-green-400' : 'text-red-400'}>
-        24h change: {change}%
+    <div className="bg-gray-800 rounded-xl p-4 space-y-3">
+      <div className="flex items-baseline justify-between">
+        <h2 className="text-xl font-semibold capitalize">{key}</h2>
+        <span
+          className={
+            'text-sm px-2 py-0.5 rounded-full ' +
+            (isUp ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400')
+          }
+        >
+          {isUp ? 'Bullish' : 'Bearish'}
+        </span>
+      </div>
+
+      <p className="text-3xl font-bold">
+        ${coin.usd.toLocaleString()}
       </p>
-      <p className="text-gray-400 mt-4 text-sm">
-        (Day 6: simple detail panel. Later we’ll turn this into charts, volume,
-        and more Coinbase-style data.)
+
+      <p className={isUp ? 'text-green-400' : 'text-red-400'}>
+        24h change: {coin.usd_24h_change.toFixed(2)}%
       </p>
+
+      <div className="text-sm text-gray-400">
+        <p>More detail later (volume, market cap, etc.).</p>
+        <p>Right now this is your “zoomed-in” panel for the selected coin.</p>
+      </div>
     </div>
   );
 }
+
