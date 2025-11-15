@@ -3,7 +3,13 @@ import type { MarketData, CoinId, MarketDataPoint } from '../types';
 
 const COINS: CoinId[] = ['bitcoin', 'ethereum', 'solana'];
 
-// helper to generate a unique-ish sparkline per coin
+/*
+  Fake historical data generator:
+  Starts at current price.
+  Moves backwards in time in 1-hour steps.
+  Adds a small “random-ish” noise using sin/cos (seeded differently per coin so each graph looks unique).
+  Produces an array of { timestamp, value } for the sparkline.
+ */
 function generateSparkline(
   basePrice: number,
   seed: number,

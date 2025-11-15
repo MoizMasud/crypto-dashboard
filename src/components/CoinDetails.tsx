@@ -19,7 +19,7 @@ export function CoinDetails({ selectedId, data }: Props) {
   const coin = data[coinKey];
 
   const isPositive = coin.usd_24h_change >= 0;
-
+  if (!data) return null;
   return (
     <div className="bg-gray-800 rounded-xl p-4 shadow-md">
       <h2 className="text-lg font-semibold mb-2">
