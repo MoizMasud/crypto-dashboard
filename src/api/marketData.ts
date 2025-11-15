@@ -14,15 +14,12 @@ function generateSparkline(
   const now = Date.now();
 
   for (let i = points - 1; i >= 0; i--) {
-    const t = now - i * 60 * 60 * 1000; // hourly points
-
-    // small pseudo-random walk influenced by seed
+    const t = now - i * 60 * 60 * 1000;
     const noise =
       ((Math.sin(seed + i) + Math.cos(seed * 1.3 + i * 0.7)) / 12) *
       basePrice *
-      0.01; // a bit bigger than before
+      0.01;
     price = Math.max(0, price + noise);
-
     out.push({ timestamp: t, value: Number(price.toFixed(2)) });
   }
 

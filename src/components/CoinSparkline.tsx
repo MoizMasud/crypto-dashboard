@@ -4,7 +4,7 @@ import type { MarketDataPoint } from '../types';
 
 type CoinSparklineProps = {
   points: MarketDataPoint[];
-  isPositive: boolean;
+  isPositive: boolean; // controls chart color (green/red).
 };
 
 type HoverState = {
@@ -13,25 +13,27 @@ type HoverState = {
 };
 
 const WIDTH = 400;
-const HEIGHT = 120;
-const PADDING_X = 16;
+const HEIGHT = 120; // canvas size for svg
+const PADDING_X = 16; // padding inside the chart so line arn't touching
 const PADDING_Y = 16;
 
 export function CoinSparkline({ points, isPositive }: CoinSparklineProps) {
   const [hover, setHover] = useState<HoverState | null>(null);
 
-  if (!points || points.length === 0) {
+  if (!points || points.length === 0) { // no data
     return <p className="text-sm text-gray-400">No data</p>;
   }
 
   const values = points.map((p) => p.value);
   const min = Math.min(...values);
-  const max = Math.max(...values);
+  const max = Math.max(...values); // find min and max
   const range = max - min || 1;
 
   const color = isPositive ? '#22c55e' : '#f97373';
 
-  // we pre-compute coords so we can reuse them for line + hover markers
+  // For each point we compute (x, y) on the SVG grid:
+  // x: spread evenly across the width, respecting left/right padding.
+  // y: higher price → smaller y (SVG origin is top-left), scaled between top and bottom padding
   const coords = points.map((p, i) => {
     const x =
       PADDING_X +
@@ -56,6 +58,9 @@ export function CoinSparkline({ points, isPositive }: CoinSparklineProps) {
       hour: 'numeric',
       minute: '2-digit',
     });
+
+    /* If you’re hovering, active = hovered point.
+      If not hovering, active defaults to the last point (most recent price), so something is always highlighted. */
 
   const active = hover ?? {
     index: coords.length - 1,

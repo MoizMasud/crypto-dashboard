@@ -62,7 +62,7 @@ function App() {
           <>
             <div className="grid gap-4 mb-6 sm:grid-cols-3">
               {stats.map((stat) => {
-                const coin = data[stat.apiKey]; // typed because apiKey is CoinKey
+                const coin = data[stat.apiKey];
 
                 const value = `$${coin.usd.toLocaleString(undefined, {
                   maximumFractionDigits: 2,
