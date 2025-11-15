@@ -16,7 +16,7 @@ const LABEL_MAP: Record<StatId, string> = {
 
 export function Watchlist({ watchlist, data, onSelect }: WatchlistProps) {
   if (watchlist.length === 0) return null;
-    if (!data) return null;
+  if (!data) return null;
   return (
     <section className="mt-10">
       {/* header */}
@@ -56,11 +56,11 @@ export function Watchlist({ watchlist, data, onSelect }: WatchlistProps) {
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{LABEL_MAP[id]}</span>
-                 
                   </div>
                   <p className="text-xs text-gray-400">On your watchlist</p>
                 </div>
               </div>
+              
 
               {/* right side: price + change */}
               <div className="text-right space-y-1">
